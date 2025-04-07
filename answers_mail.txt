@@ -1,0 +1,29 @@
+- pourquoi td(1) : 
+en vrai on fait pas exactement du td(1), c'est plutot une version simple de q-learning, sans trace d'eligibilite. 
+on a choisi ca parce que c'est plus facile a debugger et a observer quand on commence. pas besoin de backpropager trop loin ni de stocker trop d'info. 
+on a privilegie la simplicite pour tester les effets des rewards et voir comment l'agent reagit. 
+c’est pas figé, on pourra tester d'autres variantes plus tard (sarsa, dqn, etc).
+
+- pourquoi target code en dur : 
+au debut c’etait plus simple de fixer les conditions du programme (genre x==42 et y_r+y_c>150) pour avoir un terrain controle. 
+ca permettait aussi d’observer ce que l’agent apprend. le but c’est de le remplacer plus tard par un vrai binaire c, avec la meme interface `execute(x, y)` 
+appelee par le wrapper. donc c’est temporaire pour prototyper vite.
+
+- quel etat : 
+pour l’instant, on donne juste un id random au debut de l’episode, ou on prend x comme next_state. c’est pas base sur des features reels. 
+mais on sait que dans la vraie version, on aura des observations du programme (genre codes retour, logs, erreurs) donc ca pourra devenir un ensemble 
+de features partiels. comme on a le code source, on est pas completement en black box, donc ca serait partiellement observable. 
+on reflechit a construire des etats a partir de ce qu’on voit a l’execution.
+
+- ensemble d’actions : les actions sont des entiers entre 0 et 49. chaque action est mappee vers un couple (x, y). 
+genre action=37 → x=3, y=70. c’est discret, pas structure. on a pense a remplacer ca par des actions plus semantiques plus tard 
+(changer x, incrementer y, etc), ou meme des decisions symboliques si on structure plus les observations.
+
+- table q/s : on a une q-table de taille 50x50 (etats x actions), mais comme les etats sont juste des ids ou des x, ca scale pas pour des cas complexes. 
+donc on sait que cette approche tiendra pas si l’espace grandit. une option c’est d’aller vers du sampling de trajectoires ou d’estimer les probabilites 
+a partir des sequences. on pourra switcher vers un modele base sur des policies plus generales si besoin.
+
+- pourquoi ces rewards : on a mis +10 pour la vraie condition d’exploit (x==42 et y_total > 150), +5 si juste x==42, -1 sinon. 
+ca permet de guider l’agent sans etre trop brutal. le +5 sert de signal intermediaire, comme un flag atteint partiellement. 
+c’est tres utile au debut de l’apprentissage, sinon l’agent recoit que des -1 et explore dans le vide. plus tard on pourra tester d’autres 
+fonctions reward plus fines (basees sur le log, ou sur des temps d’exec, etc).
