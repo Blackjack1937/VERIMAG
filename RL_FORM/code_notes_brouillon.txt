@@ -1,0 +1,50 @@
+- objectif du code = simuler un attaquant qui apprend à exploiter un programme vulnérable sans accès interne (black-box)
+- idée = utiliser un agent de q-learning qui interagit avec un programme cible et apprend quelles entrées (x, y) déclenchent une faille
+
+- classe TargetProgram :
+  - représente un programme vulnérable simulé
+  - y = y_r + y_c : y_r = composante fixe (même valeur à chaque reset si fixed_random_seed=True), y_c = bruit aléatoire à chaque appel
+  - la faille se déclenche si x == 42 et y_total > 150 → reward = +10
+  - si x == 42 seulement, reward = +5 (progrès partiel)
+  - sinon reward = -1 (échec)
+  - but = voir si l'agent peut apprendre que x=42 est spécial, et ignorer le bruit de y_c
+
+
+
+- classe RLAttackAgent :
+  - agent de q-learning avec une table Q de taille [état, action]
+  - stratégie epsilon-greedy : explore (random action) ou exploite (choisit meilleur Q)
+  - mise à jour Q par règle de Bellman :
+    Q(s,a) ← Q(s,a) + alpha * (r + gamma * max_a' Q(s',a') - Q(s,a))
+  - epsilon diminue avec le temps → exploration moins fréquente
+
+- boucle d'entraînement :
+  - chaque épisode = tentative d'attaque
+  - l'agent choisit un état initial aléatoire (pas très significatif)
+  - à chaque step :
+    - action ∈ [0..49] mappée en (x, y)
+      - x = action // 10     → valeurs entre 0 et 4
+      - y = (action % 50) * 10 → valeurs entre 0 et 490
+    - appelle target.execute(x, y) → obtient reward
+    - next_state = x (très simple, pas encore de vraies features)
+    - update Q
+    - s'arrête si reward == 10 (exploit atteint)
+  - enregistre la reward totale de l’épisode
+  - réduit epsilon pour explorer moins
+
+- visualisation :
+  - calcule une moyenne mobile sur les rewards par épisode
+  - but = voir si l'agent s’améliore avec le temps
+
+- choix justifiés :
+  - q-learning = simple, adapté aux espaces discrets pour prototype rapide
+  - rewards partiels (+5) = feedback progressif pour aider l’agent à apprendre
+  - bruit (y_c) = simule une incertitude comme dans des vrais programmes
+  - mapping action → (x,y) = discretisation de l’espace d’attaque
+
+- ce code teste si :
+  - l’agent peut apprendre à cibler x = 42 malgré le bruit
+  - la fonction de reward est suffisamment informative
+  - l’apprentissage est possible dans un cadre bruité et discretisé
+
+- prochaine étape logique : meilleure représentation des états (features), tester d’autres fonctions de récompense, échantillonnage plus intelligent des actions
