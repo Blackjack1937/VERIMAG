@@ -1,0 +1,8 @@
+numpy
+gymnasium==0.29
+tqdm
+pandas
+matplotlib
+torch          
+tensorboard    
+pytest

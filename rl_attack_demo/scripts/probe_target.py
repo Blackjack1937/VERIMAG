@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 import random, tqdm
+from pathlib import Path
 from agent.runner import ProgramRunner
 
-PR = ProgramRunner("bin/magic_crash")
+ROOT = Path(__file__).resolve().parents[1]   # racine du dépôt
+BIN  = ROOT / "bin" / "magic_crash"
+
+PR = ProgramRunner(BIN)
 
 CRASHES, N = 0, 1000
 for _ in tqdm.trange(N):

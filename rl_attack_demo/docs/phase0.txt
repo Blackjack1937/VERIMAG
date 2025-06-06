@@ -1,0 +1,7 @@
+nterpretation la courbe
+
+    Phase 0 réussie : la moyenne mobile sur 50 épisodes (axe Y) grimpe brusquement de ≈ 420 à ≈ 800 vers l’épisode 1100 puis se stabilise – le Q-table a “découvert” l’entier 133 et le rejoue quasi systématiquement (≈ 80 % de crashs → 800 points).
+
+    Plateau stable : de ~1500 à 5000 épisodes, la courbe oscille dans une bande étroite, signe que la politique est figée à peu de chose près (reste un peu d’exploration ε-greedy).
+
+En résumé : le pipeline fonctionne et l’algorithme tabulaire converge comme attendu.
