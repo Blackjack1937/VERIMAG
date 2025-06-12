@@ -25,10 +25,11 @@ class QNet(nn.Module):
         self.n_bits = n_bits
         n_actions = 2 ** n_bits
         self.net = nn.Sequential(
-            nn.Linear(2, 512), nn.ReLU(),
-            nn.Linear(512, 512), nn.ReLU(),
-            nn.Linear(512, n_actions),
-        )
+    nn.Linear(3, 256), nn.ReLU(),
+    nn.Linear(256, 256), nn.ReLU(),
+    nn.Linear(256, 259),          # 0-258 actions
+)
+
 
     def forward(self, x):
         # x shape (batch, 2)  already float32
